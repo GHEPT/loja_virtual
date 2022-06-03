@@ -15,10 +15,10 @@ import javax.persistence.TemporalType;
 public class PessoaFisica extends Pessoa {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Column(nullable = false)
 	private String cpf;
-	
+
 	@Temporal(TemporalType.DATE)
 	private Date dataNascimento;
 
@@ -36,6 +36,6 @@ public class PessoaFisica extends Pessoa {
 
 	public void setDataNascimento(Date dataNascimento) {
 		this.dataNascimento = dataNascimento;
-	}	
+	}
 
 }
