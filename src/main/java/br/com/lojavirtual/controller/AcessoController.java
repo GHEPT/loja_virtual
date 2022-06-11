@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.lojavirtual.ExceptionLojaVirtual;
 import br.com.lojavirtual.model.Acesso;
 import br.com.lojavirtual.repository.AcessoRepository;
 import br.com.lojavirtual.service.AcessoService;
@@ -21,57 +22,70 @@ import br.com.lojavirtual.service.AcessoService;
 @Controller
 @RestController
 public class AcessoController {
-	
+
 	@Autowired
 	private AcessoService acessoService;
-	
+
 	@Autowired
 	private AcessoRepository acessoRepository;
-	
-	@ResponseBody /*pra poder dar retorno da API*/
-	@PostMapping(value = "/salvarAcesso") /*Mapeando a URL pra receber um json*/
-	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso) { /* O @RequestBody recebe o json e converte para objeto*/
-		
-		Acesso acessoSalvo = acessoService.save(acesso); 
-		
+
+	@ResponseBody /* pra poder dar retorno da API */
+	@PostMapping(value = "/salvarAcesso") /* Mapeando a URL pra receber um json */
+	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso)
+			throws ExceptionLojaVirtual { /* O @RequestBody recebe o json e converte para objeto */
+
+		if (acesso.getId() == null) {
+			List<Acesso> acessos = acessoRepository.buscarAcessoDescricao(acesso.getDescricao().toUpperCase());
+
+			if (!acessos.isEmpty()) {
+				throw new ExceptionLojaVirtual(
+						"Já existe o acesso " + acesso.getDescricao() + " cadastrado no sistema");
+			}
+		}
+
+		Acesso acessoSalvo = acessoService.save(acesso);
+
 		return new ResponseEntity<Acesso>(acessoSalvo, HttpStatus.OK);
 	}
-	
-	
-	@ResponseBody /*pra poder dar retorno da API*/
-	@PostMapping(value = "/deletarAcesso") /*Mapeando a URL pra receber um json*/
-	public ResponseEntity<?> deletarAcesso(@RequestBody Acesso acesso) { /* O @RequestBody recebe o json e converte para objeto*/
-		
+
+	@ResponseBody /* pra poder dar retorno da API */
+	@PostMapping(value = "/deletarAcesso") /* Mapeando a URL pra receber um json */
+	public ResponseEntity<?> deletarAcesso(
+			@RequestBody Acesso acesso) { /* O @RequestBody recebe o json e converte para objeto */
+
 		acessoRepository.deleteById(acesso.getId());
-		
+
 		return new ResponseEntity("**Acesso removido com sucesso!**", HttpStatus.OK);
 	}
-	
+
 	@ResponseBody
-	@DeleteMapping(value = "/deletarAcessoPorId/{id}") /*Mapeando a URL pra receber um json*/
+	@DeleteMapping(value = "/deletarAcessoPorId/{id}") /* Mapeando a URL pra receber um json */
 	public ResponseEntity<?> deletarAcessoPorId(@PathVariable("id") Long id) {
-		
+
 		acessoRepository.deleteById(id);
-		
+
 		return new ResponseEntity("**Acesso removido com sucesso pelo Id!**", HttpStatus.OK);
 	}
-	
+
 	@ResponseBody
 	@GetMapping(value = "/obterAcessoPorId/{id}")
-	public ResponseEntity<Acesso> obterAcessoPorId(@PathVariable("id") Long id) {
-		
-		
-		Acesso acesso = acessoRepository.findById(id).get();
-		
+	public ResponseEntity<Acesso> obterAcessoPorId(@PathVariable("id") Long id) throws ExceptionLojaVirtual {
+
+		Acesso acesso = acessoRepository.findById(id).orElse(null);
+
+		if (acesso == null) {
+			throw new ExceptionLojaVirtual("Não foi encontrado acesso com o id " + id + " no sistema");
+		}
+
 		return new ResponseEntity<Acesso>(acesso, HttpStatus.OK);
 	}
-	
+
 	@ResponseBody
 	@GetMapping(value = "/buscarPorDescricao/{descricao}")
-	public ResponseEntity<List<Acesso>> buscarPorDescricao(@PathVariable("descricao") String descricao) {		
-		
-		List<Acesso> acesso = acessoRepository.buscarAcessoDescricao(descricao);
-		
+	public ResponseEntity<List<Acesso>> buscarPorDescricao(@PathVariable("descricao") String descricao) {
+
+		List<Acesso> acesso = acessoRepository.buscarAcessoDescricao(descricao.toUpperCase());
+
 		return new ResponseEntity<List<Acesso>>(acesso, HttpStatus.OK);
 	}
 

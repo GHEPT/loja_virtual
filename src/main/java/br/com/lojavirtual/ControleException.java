@@ -22,6 +22,16 @@ import br.com.lojavirtual.dto.ObjetoErroDTO;
 @ControllerAdvice
 public class ControleException extends ResponseEntityExceptionHandler {
 	
+	@ExceptionHandler(ExceptionLojaVirtual.class)
+	public ResponseEntity<Object> handleExceptionCustom (ExceptionLojaVirtual ex){
+		ObjetoErroDTO objetoErroDTO = new ObjetoErroDTO();
+		
+		objetoErroDTO.setError(ex.getMessage());
+		objetoErroDTO.setErrorCode(HttpStatus.OK.toString());
+		
+		return new ResponseEntity<Object>(objetoErroDTO, HttpStatus.OK);
+	}
+	
 	/*CAPTURA EXCEÇÕES DO PROJETO*/
 	@ExceptionHandler({Exception.class, RuntimeException.class, Throwable.class})
 	@Override
@@ -68,7 +78,9 @@ public class ControleException extends ResponseEntityExceptionHandler {
 		
 		
 		objetoErroDTO.setError(msg);
-		objetoErroDTO.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());		
+		objetoErroDTO.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());	
+		
+		ex.printStackTrace();
 		
 		return new ResponseEntity<Object>(objetoErroDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
