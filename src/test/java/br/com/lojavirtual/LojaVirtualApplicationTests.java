@@ -1,10 +1,12 @@
 package br.com.lojavirtual;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
@@ -23,6 +25,7 @@ import br.com.lojavirtual.model.Acesso;
 import br.com.lojavirtual.repository.AcessoRepository;
 import junit.framework.TestCase;
 
+@Profile("test")
 @SpringBootTest(classes = LojaVirtualApplication.class)
 public class LojaVirtualApplicationTests extends TestCase{
 	
@@ -43,7 +46,7 @@ public class LojaVirtualApplicationTests extends TestCase{
 		MockMvc mockMvc = builder.build();
 		
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("ROLE_COMPRADOR");
+		acesso.setDescricao("ROLE_COMPRADOR" + Calendar.getInstance().getTimeInMillis());
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		
@@ -174,8 +177,9 @@ public class LojaVirtualApplicationTests extends TestCase{
 	@Test
 	public void testeCadastraAcesso() throws ExceptionLojaVirtual {
 		
+		String descAcesso = "ROLE_TESTE " + Calendar.getInstance().getTimeInMillis();
 		Acesso acesso = new Acesso();		
-		acesso.setDescricao("ROLE_ADMIN");
+		acesso.setDescricao(descAcesso);
 		
 		assertEquals(true, acesso.getId() == null);
 		acesso = acessoController.salvarAcesso(acesso).getBody();
@@ -184,7 +188,7 @@ public class LojaVirtualApplicationTests extends TestCase{
 		assertEquals(true, acesso.getId() > 0);
 		
 		/*Validando dados salvos de forma correta*/
-		assertEquals("ROLE_ADMIN", acesso.getDescricao());
+		assertEquals(descAcesso, acesso.getDescricao());
 		
 		/*Teste de carregamento*/
 		Acesso acesso2 = acessoRepository.findById(acesso.getId()).get();		
