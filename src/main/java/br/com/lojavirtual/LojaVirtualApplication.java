@@ -17,7 +17,7 @@ public class LojaVirtualApplication {
 
 	public static void main(String[] args) {
 		
-		//System.out.println(new BCryptPasswordEncoder().encode("Senha@2022"));
+		System.out.println(new BCryptPasswordEncoder().encode("Senha@2022"));
 		SpringApplication.run(LojaVirtualApplication.class, args);
 	}
 
