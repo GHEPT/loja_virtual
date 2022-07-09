@@ -24,9 +24,18 @@ public class PessoaUserService {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	@Autowired
+	private SendEmailService sendEmailService;
+	
 	public PessoaJuridica salvarPessoaJuridica(PessoaJuridica pj) {
 		
+		for (int i = 0; i< pj.getEnderecos().size(); i++) {
+			pj.getEnderecos().get(i).setPessoa(pj);
+			pj.getEnderecos().get(i).setEmpresa(pj);
+		}
+		
 		pj = pessoaRepository.save(pj);
+		
 		Usuario usuarioPj = usuarioRepository.findUserByPessoa(pj.getId(), pj.getEmail());
 		
 		if (usuarioPj == null) {
@@ -49,7 +58,18 @@ public class PessoaUserService {
 			
 			usuarioRepository.insereAcessoUserPj(usuarioPj.getId());
 			
-			/*FAZER O ENVIO DE E-MAIL DO LOGIN E SENHA*/
+			StringBuilder mensagemHtml = new StringBuilder();
+			mensagemHtml.append("<b>Segue abaixo seus dados para acesso a Loja Virtual</b><br/><br/>");
+			mensagemHtml.append("<b>Login: </b>" + pj.getEmail()+ "<br/");
+			mensagemHtml.append("<b>Senha: </b>" + senha + "<br/><br/>");
+			mensagemHtml.append("Obrigado!");
+			
+			
+			try {
+				sendEmailService.enviarEmailHtml("Acesso gerado para Loja Virtual", mensagemHtml.toString(), pj.getEmail());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		
