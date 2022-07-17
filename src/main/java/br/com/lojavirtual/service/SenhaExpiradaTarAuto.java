@@ -24,7 +24,7 @@ public class SenhaExpiradaTarAuto {
 	private SendEmailService sendEmailService;
 
 	//@Scheduled(initialDelay = 5000, fixedDelay = 86400000) // A cada 24 horas
-	@Scheduled(cron = "0 0 11 * * *", zone = "America/Sao Paulo") // Vai rodar todo dia às 11h da manhã, horário de Brasília.
+	@Scheduled(cron = "0 0 11 * * *", zone = "America/Sao_Paulo") // Vai rodar todo dia às 11h da manhã, horário de Brasília.
 	public void notificarTrocaSenha() throws UnsupportedEncodingException, MessagingException, InterruptedException {
 		
 		List<Usuario> usuarios = usuarioRepository.usuarioSenhaVencida();
