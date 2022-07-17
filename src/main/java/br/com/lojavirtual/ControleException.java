@@ -45,9 +45,9 @@ public class ControleException extends ResponseEntityExceptionHandler {
 		if (ex instanceof MethodArgumentNotValidException) {
 			List<ObjectError> list = ((MethodArgumentNotValidException) ex).getBindingResult().getAllErrors();
 			for(ObjectError objectError : list) {
-				msg += objectError.getDefaultMessage() + "\n";
+				msg += objectError.getDefaultMessage();
 			}
-		} if (ex instanceof HttpMessageNotReadableException) {
+		} else if (ex instanceof HttpMessageNotReadableException) {
 			msg = "Não está sendo enviado dados para o BODY - corpo da requisição";
 			
 		} else {
