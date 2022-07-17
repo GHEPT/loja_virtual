@@ -84,7 +84,6 @@ public class TestePessoaUsuario extends TestCase {
 		pessoaFisica.setNome("Dono Empresa");
 		pessoaFisica.setTelefone("11987898789");
 		pessoaFisica.setEmail("clientenovo@gmail.com");
-		pessoaFisica.setDataNascimento(2000-12-12);
 		pessoaFisica.setEmpresa(pessoaJuridica);
 		
 
